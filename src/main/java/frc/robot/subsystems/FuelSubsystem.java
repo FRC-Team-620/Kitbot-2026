@@ -16,7 +16,7 @@ public class FuelSubsystem extends SubsystemBase {
     intakeLauncherRoller = new Spark(INTAKE_LAUNCHER_MOTOR_ID);
     feederRoller = new Spark(FEEDER_MOTOR_ID);
 
-    intakeLauncherRoller.setInverted(true);
+    intakeLauncherRoller.setInverted(false);
     SmartDashboard.putNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE);
     SmartDashboard.putNumber("Intaking intake roller value", INTAKING_INTAKE_VOLTAGE);
     SmartDashboard.putNumber("Launching feeder roller value", LAUNCHING_FEEDER_VOLTAGE);
