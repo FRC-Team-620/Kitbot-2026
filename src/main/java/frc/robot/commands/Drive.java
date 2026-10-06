@@ -10,42 +10,30 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/** Driver slot 0: right trigger forward, left trigger reverse, right stick steering. */
 public class Drive extends Command {
-  /** Creates a new Drive. */
-  DrivetrainSubsystem driveSubsystem;
-  CommandXboxController controller;
+  private final DrivetrainSubsystem drivetrain;
+  private final CommandXboxController driver;
 
-  public Drive(DrivetrainSubsystem driveSystem, CommandXboxController driverController) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveSystem);
-    driveSubsystem = driveSystem;
-    controller = driverController;
+  public Drive(DrivetrainSubsystem drivetrain, CommandXboxController driver) {
+    this.drivetrain = drivetrain;
+    this.driver = driver;
+    addRequirements(drivetrain);
   }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  // The Y axis of the controller is inverted so that pushing the
-  // stick away from you (a negative value) drives the robot forwards (a positive
-  // value). The X axis is scaled down so the rotation is more easily
-  // controllable.
   @Override
   public void execute() {
-    // driveSubsystem.driveArcade(-controller.getLeftY() * DRIVE_SCALING, -controller.getRightX() * ROTATION_SCALING);
-    driveSubsystem.driveArcade((-controller.getLeftTriggerAxis() + controller.getRightTriggerAxis()) * DRIVE_SCALING, -controller.getRightX() * ROTATION_SCALING);
+    double forwardSpeed = (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()) * DRIVE_SCALING;
+    double turnSpeed = -driver.getRightX() * ROTATION_SCALING;
+    // Refresh every scheduler cycle to keep DifferentialDrive's watchdog fed.
+    drivetrain.driveArcade(forwardSpeed, turnSpeed);
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    driveSubsystem.driveArcade(0, 0);
+    drivetrain.driveArcade(0, 0);
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

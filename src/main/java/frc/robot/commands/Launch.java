@@ -4,46 +4,54 @@
 
 package frc.robot.commands;
 
+import static frc.robot.Constants.FuelConstants.*;
+
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.FuelSubsystem;
-import static frc.robot.Constants.FuelConstants.*;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/** Shoots while X is held: start the shooter, then feed balls after spin-up. */
 public class Launch extends Command {
-  /** Creates a new Intake. */
+  private final FuelSubsystem fuel;
+  private final Timer startupTimer = new Timer();
+  private boolean delayedMotorStarted;
 
-  FuelSubsystem fuelSubsystem;
-
-  public Launch(FuelSubsystem fuelSystem) {
-    addRequirements(fuelSystem);
-    this.fuelSubsystem = fuelSystem;
+  public Launch(FuelSubsystem fuel) {
+    this.fuel = fuel;
+    // Intake and shooting share motors, so only one may control them at a time.
+    addRequirements(fuel);
   }
 
-  // Called when the command is initially scheduled. Set the rollers to the
-  // appropriate values for intaking
   @Override
   public void initialize() {
-    fuelSubsystem
-        .setIntakeLauncherRoller(
-            SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
-    fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Launching feeder roller value", LAUNCHING_FEEDER_VOLTAGE));
+    // Clear the previous mode's outputs and reset the delay on every button press.
+    fuel.stop();
+    delayedMotorStarted = false;
+    startupTimer.restart();
+    fuel.setGroundIntakeVoltage(GROUND_INTAKE_VOLTS);
+    fuel.setShooterVoltage(SmartDashboard.getNumber(SHOOTER_DASHBOARD_KEY, SHOOTER_VOLTS));
   }
 
-  // Called every time the scheduler runs while the command is scheduled. This
-  // command doesn't require updating any values while running
   @Override
   public void execute() {
+    // A timer lets the scheduler keep driving the robot while we wait.
+    if (!delayedMotorStarted && startupTimer.hasElapsed(SHOOT_MIDDLE_DELAY_SECONDS)) {
+      fuel.setMiddleIntakeVoltage(
+          SmartDashboard.getNumber(SHOOT_MIDDLE_DASHBOARD_KEY, MIDDLE_SHOOT_VOLTS));
+      delayedMotorStarted = true;
+    }
   }
 
-  // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
+    // Runs on release, interruption by another command, or autonomous timeout.
+    startupTimer.stop();
+    fuel.stop();
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return false; // The button binding or autonomous timeout ends this command.
   }
 }

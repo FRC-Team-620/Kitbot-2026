@@ -4,25 +4,18 @@
 
 package frc.robot.commands;
 
+import static frc.robot.Constants.AutoConstants.*;
+
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.FuelSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/** The existing autonomous routine: a short drive, then ten seconds of shooting. */
 public class ExampleAuto extends SequentialCommandGroup {
-  /** Creates a new ExampleAuto. */
-  public ExampleAuto(DrivetrainSubsystem driveSubsystem, FuelSubsystem ballSubsystem) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+  public ExampleAuto(DrivetrainSubsystem drivetrain, FuelSubsystem fuel) {
     addCommands(
-    // Drive backwards for .25 seconds. The driveArcadeAuto command factory
-    // intentionally creates a command which does not end which allows us to control
-    // the timing using the withTimeout decorator
-    new AutoDrive(driveSubsystem,0.5,  0.0).withTimeout(.25),
-    // Spin up the launcher for 1 second and then launch balls for 9 seconds, for a
-    // total of 10 seconds
-    new Launch(ballSubsystem).withTimeout(10));
+        new AutoDrive(drivetrain, DRIVE_SPEED, 0).withTimeout(DRIVE_SECONDS),
+        // Launch includes its 0.25-second middle-intake delay within these ten seconds.
+        new Launch(fuel).withTimeout(SHOOT_SECONDS));
   }
 }

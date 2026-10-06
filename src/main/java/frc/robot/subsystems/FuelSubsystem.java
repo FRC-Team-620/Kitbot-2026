@@ -4,44 +4,44 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.Spark;   
+import static frc.robot.Constants.FuelConstants.*;
+
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Constants.FuelConstants.*;
+
+/** Owns the three ball-handling motors. Commands decide their sequence and timing. */
 public class FuelSubsystem extends SubsystemBase {
-  private final Spark feederRoller;
-  private final Spark intakeLauncherRoller;
+  private final Spark shooterMotor = new Spark(SHOOTER_PWM);
+  private final Spark middleIntakeMotor = new Spark(MIDDLE_INTAKE_PWM);
+  private final Spark groundIntakeMotor = new Spark(GROUND_INTAKE_PWM);
 
   public FuelSubsystem() {
-    intakeLauncherRoller = new Spark(INTAKE_LAUNCHER_MOTOR_ID);
-    feederRoller = new Spark(FEEDER_MOTOR_ID);
-
-    intakeLauncherRoller.setInverted(false);
-    SmartDashboard.putNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE);
-    SmartDashboard.putNumber("Intaking intake roller value", INTAKING_INTAKE_VOLTAGE);
-    SmartDashboard.putNumber("Launching feeder roller value", LAUNCHING_FEEDER_VOLTAGE);
-    SmartDashboard.putNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE);
-    SmartDashboard.putNumber("Spin-up feeder roller value", SPIN_UP_FEEDER_VOLTAGE);
+    shooterMotor.setInverted(false);
+    groundIntakeMotor.setInverted(GROUND_INTAKE_INVERTED);
+    SmartDashboard.putNumber(INTAKE_MIDDLE_DASHBOARD_KEY, MIDDLE_INTAKE_VOLTS);
+    SmartDashboard.putNumber(SHOOT_MIDDLE_DASHBOARD_KEY, MIDDLE_SHOOT_VOLTS);
+    SmartDashboard.putNumber(SHOOTER_DASHBOARD_KEY, SHOOTER_VOLTS);
   }
 
-  // A method to set the voltage of the intake roller
-  public void setIntakeLauncherRoller(double voltage) {
-    intakeLauncherRoller.setVoltage(voltage);
+  /** PWM 4: launches balls; stays off while collecting balls. */
+  public void setShooterVoltage(double volts) {
+    shooterMotor.setVoltage(volts);
   }
 
-  // A method to set the voltage of the intake roller
-  public void setFeederRoller(double voltage) {
-    feederRoller.setVoltage(voltage);
+  /** PWM 5: feeds the hopper during intake and reverses to feed the shooter. */
+  public void setMiddleIntakeVoltage(double volts) {
+    middleIntakeMotor.setVoltage(volts);
   }
 
-  // A method to stop the rollers
+  /** PWM 6: runs in the same direction during intake and shooting. */
+  public void setGroundIntakeVoltage(double volts) {
+    groundIntakeMotor.setVoltage(volts);
+  }
+
   public void stop() {
-    feederRoller.set(0);
-    intakeLauncherRoller.set(0);
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+    middleIntakeMotor.set(0);
+    shooterMotor.set(0);
+    groundIntakeMotor.set(0);
   }
 }
