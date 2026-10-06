@@ -4,58 +4,54 @@
 
 package frc.robot;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean constants. This class should not be used for any other
- * purpose. All constants should be declared globally (i.e. public static). Do
- * not put anything functional in this class.
- *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the constants are needed, to reduce verbosity.
- */
+/** Wiring and tuning values for this robot. PWM ports are roboRIO signal ports, not CAN IDs. */
 public final class Constants {
-  public static final class DriveConstants {
-    // Motor controller IDs for drivetrain motors
-    public static final int LEFT_LEADER_ID = 1;
-    public static final int LEFT_FOLLOWER_ID = 2;
-    public static final int RIGHT_LEADER_ID = 3;
-    public static final int RIGHT_FOLLOWER_ID = 4;
+  private Constants() {}
 
-    // Current limit for drivetrain motors. 60A is a reasonable maximum to reduce
-    // likelihood of tripping breakers or damaging CIM motors
-    public static final int DRIVE_MOTOR_CURRENT_LIMIT = 60;
+  public static final class DriveConstants {
+    private DriveConstants() {}
+    public static final int FRONT_LEFT_PWM = 3;
+    public static final int REAR_LEFT_PWM = 2;
+    public static final int FRONT_RIGHT_PWM = 1;
+    public static final int REAR_RIGHT_PWM = 0;
   }
 
   public static final class FuelConstants {
-    // Motor controller IDs for Fuel Mechanism motors
-    public static final int FEEDER_MOTOR_ID = 5;
-    public static final int INTAKE_LAUNCHER_MOTOR_ID = 4;
+    private FuelConstants() {}
+    public static final int SHOOTER_PWM = 4;
+    public static final int MIDDLE_INTAKE_PWM = 5;
+    public static final int GROUND_INTAKE_PWM = 6;
+    public static final boolean GROUND_INTAKE_INVERTED = false;
 
-    // Current limit and nominal voltage for fuel mechanism motors.
-    public static final int FEEDER_MOTOR_CURRENT_LIMIT = 60;
-    public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 60;
+    // These signs match the tested motor directions. The middle intake reverses to shoot.
+    public static final double MIDDLE_INTAKE_VOLTS = 12;
+    public static final double MIDDLE_SHOOT_VOLTS = -9;
+    public static final double SHOOTER_VOLTS = -10.6;
+    public static final double GROUND_INTAKE_VOLTS = 12;
 
-    // Voltage values for various fuel operations. These values may need to be tuned
-    // based on exact robot construction.
-    // See the Software Guide for tuning information
-    public static final double INTAKING_FEEDER_VOLTAGE = -12;
-    public static final double INTAKING_INTAKE_VOLTAGE = 10;
-    public static final double LAUNCHING_FEEDER_VOLTAGE = 9;
-    public static final double LAUNCHING_LAUNCHER_VOLTAGE = 10.6;
-    public static final double SPIN_UP_FEEDER_VOLTAGE = -6;
-    public static final double SPIN_UP_SECONDS = 1;
+    // Intake starts the middle roller first. Shooting starts the shooter first.
+    public static final double INTAKE_GROUND_DELAY_SECONDS = 0.25;
+    public static final double SHOOT_MIDDLE_DELAY_SECONDS = 0.25;
+
+    // Keep the existing dashboard names so the team's tuning controls still work.
+    public static final String INTAKE_MIDDLE_DASHBOARD_KEY = "Intaking feeder roller value";
+    public static final String SHOOT_MIDDLE_DASHBOARD_KEY = "Launching feeder roller value";
+    public static final String SHOOTER_DASHBOARD_KEY = "Launching launcher roller value";
   }
 
   public static final class OperatorConstants {
-    // Port constants for driver and operator controllers. These should match the
-    // values in the Joystick tab of the Driver Station software
+    private OperatorConstants() {}
+    // Slots in Driver Station's USB list, not physical USB sockets on the laptop.
     public static final int DRIVER_CONTROLLER_PORT = 0;
     public static final int OPERATOR_CONTROLLER_PORT = 1;
+    public static final double DRIVE_SCALING = 0.7;
+    public static final double ROTATION_SCALING = 0.8;
+  }
 
-    // This value is multiplied by the joystick value when rotating the robot to
-    // help avoid turning too fast and beign difficult to control
-    public static final double DRIVE_SCALING = .7;
-    public static final double ROTATION_SCALING = .8;
+  public static final class AutoConstants {
+    private AutoConstants() {}
+    public static final double DRIVE_SPEED = 0.5;
+    public static final double DRIVE_SECONDS = 0.25;
+    public static final double SHOOT_SECONDS = 10;
   }
 }
