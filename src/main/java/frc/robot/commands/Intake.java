@@ -4,53 +4,54 @@
 
 package frc.robot.commands;
 
-import static frc.robot.Constants.FuelConstants.*;
-
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.FuelSubsystem;
+import static frc.robot.Constants.FuelConstants.*;
 
-/** Collects while Y is held: start the middle intake, then the ground intake. */
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Intake extends Command {
-  private final FuelSubsystem fuel;
-  private final Timer startupTimer = new Timer();
-  private boolean delayedMotorStarted;
+  /** Creates a new Intake. */
 
-  public Intake(FuelSubsystem fuel) {
-    this.fuel = fuel;
-    // Intake and shooting share motors, so only one may control them at a time.
-    addRequirements(fuel);
+  FuelSubsystem fuelSubsystem;
+  private final Timer groundFeederDelay = new Timer();
+  private boolean groundFeederStarted;
+
+  public Intake(FuelSubsystem fuelSystem) {
+    addRequirements(fuelSystem);
+    this.fuelSubsystem = fuelSystem;
   }
 
+  // Called when the command is initially scheduled. Set the rollers to the
+  // appropriate values for intaking
   @Override
   public void initialize() {
-    // Clear the previous mode's outputs and reset the delay on every button press.
-    fuel.stop();
-    delayedMotorStarted = false;
-    startupTimer.restart();
-    fuel.setMiddleIntakeVoltage(
-        SmartDashboard.getNumber(INTAKE_MIDDLE_DASHBOARD_KEY, MIDDLE_INTAKE_VOLTS));
+    fuelSubsystem.stop();
+    groundFeederStarted = false;
+    groundFeederDelay.restart();
+    fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE));
   }
 
+  // Start the ground feeder after the intake feeder is running.
   @Override
   public void execute() {
-    // A timer lets the scheduler keep driving the robot while we wait.
-    if (!delayedMotorStarted && startupTimer.hasElapsed(INTAKE_GROUND_DELAY_SECONDS)) {
-      fuel.setGroundIntakeVoltage(GROUND_INTAKE_VOLTS);
-      delayedMotorStarted = true;
+    if (!groundFeederStarted && groundFeederDelay.hasElapsed(GROUND_FEEDER_DELAY_SECONDS)) {
+      fuelSubsystem.setGroundFeeder(GROUND_FEEDER_VOLTAGE);
+      groundFeederStarted = true;
     }
   }
 
+  // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
-    // Runs on release, interruption by another command, or autonomous timeout.
-    startupTimer.stop();
-    fuel.stop();
+    groundFeederDelay.stop();
+    fuelSubsystem.stop();
   }
 
+  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false; // The button binding or autonomous timeout ends this command.
+    return false;
   }
 }
