@@ -4,54 +4,58 @@
 
 package frc.robot.commands;
 
-import static frc.robot.Constants.FuelConstants.*;
-
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.FuelSubsystem;
+import static frc.robot.Constants.FuelConstants.*;
 
-/** Shoots while X is held: start the shooter, then feed balls after spin-up. */
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Launch extends Command {
-  private final FuelSubsystem fuel;
-  private final Timer startupTimer = new Timer();
-  private boolean delayedMotorStarted;
+  /** Creates a shooter command with delayed feeding. */
 
-  public Launch(FuelSubsystem fuel) {
-    this.fuel = fuel;
-    // Intake and shooting share motors, so only one may control them at a time.
-    addRequirements(fuel);
+  FuelSubsystem fuelSubsystem;
+  private final Timer feederDelay = new Timer();
+  private boolean feederStarted;
+
+  public Launch(FuelSubsystem fuelSystem) {
+    addRequirements(fuelSystem);
+    this.fuelSubsystem = fuelSystem;
   }
 
+  // Start the launcher and ground feeder; keep the feeder off during spin-up.
   @Override
   public void initialize() {
-    // Clear the previous mode's outputs and reset the delay on every button press.
-    fuel.stop();
-    delayedMotorStarted = false;
-    startupTimer.restart();
-    fuel.setGroundIntakeVoltage(GROUND_INTAKE_VOLTS);
-    fuel.setShooterVoltage(SmartDashboard.getNumber(SHOOTER_DASHBOARD_KEY, SHOOTER_VOLTS));
+    fuelSubsystem.stop();
+    feederStarted = false;
+    feederDelay.restart();
+    fuelSubsystem.setGroundFeeder(GROUND_FEEDER_VOLTAGE);
+    fuelSubsystem
+        .setIntakeLauncherRoller(
+            SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
+
   }
 
+  // Start feeding after the launcher has had time to spin up.
   @Override
   public void execute() {
-    // A timer lets the scheduler keep driving the robot while we wait.
-    if (!delayedMotorStarted && startupTimer.hasElapsed(SHOOT_MIDDLE_DELAY_SECONDS)) {
-      fuel.setMiddleIntakeVoltage(
-          SmartDashboard.getNumber(SHOOT_MIDDLE_DASHBOARD_KEY, MIDDLE_SHOOT_VOLTS));
-      delayedMotorStarted = true;
+    if (!feederStarted && feederDelay.hasElapsed(SHOOTER_FEEDER_DELAY_SECONDS)) {
+      fuelSubsystem.setFeederRoller(
+          SmartDashboard.getNumber("Launching feeder roller value", LAUNCHING_FEEDER_VOLTAGE));
+      feederStarted = true;
     }
   }
 
+  // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
-    // Runs on release, interruption by another command, or autonomous timeout.
-    startupTimer.stop();
-    fuel.stop();
+    feederDelay.stop();
+    fuelSubsystem.stop();
   }
 
+  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false; // The button binding or autonomous timeout ends this command.
+    return false;
   }
 }

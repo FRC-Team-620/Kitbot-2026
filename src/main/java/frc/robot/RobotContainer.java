@@ -4,10 +4,11 @@
 
 package frc.robot;
 
-import static frc.robot.Constants.OperatorConstants.*;
-
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static frc.robot.Constants.OperatorConstants.*;
 import frc.robot.commands.Drive;
 import frc.robot.commands.ExampleAuto;
 import frc.robot.commands.Intake;
@@ -15,23 +16,74 @@ import frc.robot.commands.Launch;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.FuelSubsystem;
 
-/** Connects the controllers to the commands that operate the robot. */
+/**
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a "declarative" paradigm, very little robot logic should
+ * actually be handled in the {@link Robot} periodic methods (other than the
+ * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * commands, and trigger mappings) should be declared here.
+ */
 public class RobotContainer {
-  private final DrivetrainSubsystem drivetrain = new DrivetrainSubsystem();
-  private final FuelSubsystem fuel = new FuelSubsystem();
-  private final CommandXboxController driver = new CommandXboxController(DRIVER_CONTROLLER_PORT);
-  private final CommandXboxController operator = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
+  // The robot's subsystems
+  private final DrivetrainSubsystem driveSubsystem = new DrivetrainSubsystem();
+  private final FuelSubsystem fuelSubsystem = new FuelSubsystem();
 
+  // The driver's controller
+  private final CommandXboxController driverController = new CommandXboxController(
+      DRIVER_CONTROLLER_PORT);
+
+  // The operator's controller
+  private final CommandXboxController operatorController = new CommandXboxController(
+      OPERATOR_CONTROLLER_PORT);
+
+  // The autonomous chooser
+  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
-    // Operator slot 1: hold Y (button 4) to collect; hold X (button 3) to shoot.
-    operator.y().whileTrue(new Intake(fuel));
-    operator.x().whileTrue(new Launch(fuel));
+    configureBindings();
 
-    drivetrain.setDefaultCommand(new Drive(drivetrain, driver));
-    fuel.setDefaultCommand(fuel.run(fuel::stop));
+    // Set the options to show up in the Dashboard for selecting auto modes. If you
+    // add additional auto modes you can add additional lines here with
+    // autoChooser.addOption
+    autoChooser.setDefaultOption("Autonomous", new ExampleAuto(driveSubsystem, fuelSubsystem));
   }
 
+  /**
+   * Use this method to define your trigger->command mappings. Triggers can be
+   * created via the {@link Trigger#Trigger(java.util.function.BooleanSupplier)}
+   * constructor with an arbitrary predicate, or via the named factories in
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
+   * for {@link CommandXboxController Xbox}/
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
+   * controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
+   */
+  private void configureBindings() {
+
+    // While Y on the operator controller is held, intake fuel.
+    operatorController.y().whileTrue(new Intake(fuelSubsystem));
+    // While X on the operator controller is held, launch fuel.
+    operatorController.x().whileTrue(new Launch(fuelSubsystem));
+    // Set the default command for the drive subsystem to the command provided by
+    // factory with the values provided by the joystick axes on the driver
+    // controller. The Y axis of the controller is inverted so that pushing the
+    // stick away from you (a negative value) drives the robot forwards (a positive
+    // value)
+    driveSubsystem.setDefaultCommand(new Drive(driveSubsystem, driverController));
+    fuelSubsystem.setDefaultCommand(fuelSubsystem.run(() -> fuelSubsystem.stop()));
+  }
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
   public Command getAutonomousCommand() {
-    return new ExampleAuto(drivetrain, fuel);
+    // An example command will be run in autonomous
+    return new ExampleAuto(driveSubsystem, fuelSubsystem);
   }
 }
