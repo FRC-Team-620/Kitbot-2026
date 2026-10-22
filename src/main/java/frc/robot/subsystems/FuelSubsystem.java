@@ -11,12 +11,16 @@ import static frc.robot.Constants.FuelConstants.*;
 public class FuelSubsystem extends SubsystemBase {
   private final Spark feederRoller;
   private final Spark intakeLauncherRoller;
+  private final Spark groundFeeder;
 
   public FuelSubsystem() {
     intakeLauncherRoller = new Spark(INTAKE_LAUNCHER_MOTOR_ID);
     feederRoller = new Spark(FEEDER_MOTOR_ID);
+    groundFeeder = new Spark(FEEDER_GROUND_MOTOR_ID);
+
 
     intakeLauncherRoller.setInverted(false);
+    groundFeeder.setInverted(GROUND_FEEDER_INVERTED);
     SmartDashboard.putNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE);
     SmartDashboard.putNumber("Intaking intake roller value", INTAKING_INTAKE_VOLTAGE);
     SmartDashboard.putNumber("Launching feeder roller value", LAUNCHING_FEEDER_VOLTAGE);
@@ -33,11 +37,15 @@ public class FuelSubsystem extends SubsystemBase {
   public void setFeederRoller(double voltage) {
     feederRoller.setVoltage(voltage);
   }
-
+  
+  public void setGroundFeeder(double voltage) {
+    groundFeeder.setVoltage(voltage);
+  }
   // A method to stop the rollers
   public void stop() {
     feederRoller.set(0);
     intakeLauncherRoller.set(0);
+    groundFeeder.set(0);
   }
 
   @Override

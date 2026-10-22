@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.FuelSubsystem;
 import static frc.robot.Constants.FuelConstants.*;
@@ -14,6 +15,8 @@ public class Intake extends Command {
   /** Creates a new Intake. */
 
   FuelSubsystem fuelSubsystem;
+  private final Timer groundFeederDelay = new Timer();
+  private boolean groundFeederStarted;
 
   public Intake(FuelSubsystem fuelSystem) {
     addRequirements(fuelSystem);
@@ -24,22 +27,26 @@ public class Intake extends Command {
   // appropriate values for intaking
   @Override
   public void initialize() {
-    fuelSubsystem
-        .setIntakeLauncherRoller(SmartDashboard.getNumber("Intaking intake roller value", INTAKING_INTAKE_VOLTAGE));
+    fuelSubsystem.stop();
+    groundFeederStarted = false;
+    groundFeederDelay.restart();
     fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE));
   }
 
-  // Called every time the scheduler runs while the command is scheduled. This
-  // command doesn't require updating any values while running
+  // Start the ground feeder after the intake feeder is running.
   @Override
   public void execute() {
+    if (!groundFeederStarted && groundFeederDelay.hasElapsed(GROUND_FEEDER_DELAY_SECONDS)) {
+      fuelSubsystem.setGroundFeeder(GROUND_FEEDER_VOLTAGE);
+      groundFeederStarted = true;
+    }
   }
 
   // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
-    fuelSubsystem.setIntakeLauncherRoller(0);
-    fuelSubsystem.setFeederRoller(0);
+    groundFeederDelay.stop();
+    fuelSubsystem.stop();
   }
 
   // Returns true when the command should end.
