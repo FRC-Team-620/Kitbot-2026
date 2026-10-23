@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.FuelSubsystem;
 import static frc.robot.Constants.FuelConstants.*;
@@ -15,8 +14,6 @@ public class Launch extends Command {
   /** Creates a shooter command with delayed feeding. */
 
   FuelSubsystem fuelSubsystem;
-  private final Timer feederDelay = new Timer();
-  private boolean feederStarted;
 
   public Launch(FuelSubsystem fuelSystem) {
     addRequirements(fuelSystem);
@@ -26,30 +23,22 @@ public class Launch extends Command {
   // Start the launcher and ground feeder; keep the feeder off during spin-up.
   @Override
   public void initialize() {
-    fuelSubsystem.stop();
-    feederStarted = false;
-    feederDelay.restart();
-    fuelSubsystem.setGroundFeeder(GROUND_FEEDER_VOLTAGE);
+    fuelSubsystem.setIntakeVoltage(INTAKE_INTAKING_VOLTAGE);
     fuelSubsystem
-        .setIntakeLauncherRoller(
-            SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
-
+        .setLauncherVoltage(
+            SmartDashboard.getNumber("Launching launcher roller value", LAUNCHER_LAUNCH_VOLTAGE));
+    fuelSubsystem.setHopperVoltage(
+        SmartDashboard.getNumber("Launching feeder roller value", HOPPER_LAUNCH_VOLTAGE));
   }
 
   // Start feeding after the launcher has had time to spin up.
   @Override
   public void execute() {
-    if (!feederStarted && feederDelay.hasElapsed(SHOOTER_FEEDER_DELAY_SECONDS)) {
-      fuelSubsystem.setFeederRoller(
-          SmartDashboard.getNumber("Launching feeder roller value", LAUNCHING_FEEDER_VOLTAGE));
-      feederStarted = true;
-    }
   }
 
   // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
-    feederDelay.stop();
     fuelSubsystem.stop();
   }
 

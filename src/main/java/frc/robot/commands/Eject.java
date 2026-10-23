@@ -25,10 +25,10 @@ public class Eject extends Command {
   @Override
   public void initialize() {
     fuelSubsystem
-        .setIntakeLauncherRoller(
-            -1 * SmartDashboard.getNumber("Intaking intake roller value", INTAKING_INTAKE_VOLTAGE));
+        .setLauncherVoltage(
+            -1 * SmartDashboard.getNumber("Intaking intake roller value", INTAKE_INTAKING_VOLTAGE));
     fuelSubsystem
-        .setFeederRoller(-1 * SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE));
+        .setHopperVoltage(-1 * SmartDashboard.getNumber("Intaking feeder roller value", HOPPER_INTAKING_VOLTAGE));
   }
 
   // Called every time the scheduler runs while the command is scheduled. This
@@ -40,8 +40,8 @@ public class Eject extends Command {
   // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
-    fuelSubsystem.setIntakeLauncherRoller(0);
-    fuelSubsystem.setFeederRoller(0);
+    fuelSubsystem.setLauncherVoltage(0);
+    fuelSubsystem.setHopperVoltage(0);
   }
 
   // Returns true when the command should end.

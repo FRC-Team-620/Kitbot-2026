@@ -9,43 +9,42 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.FuelConstants.*;
 public class FuelSubsystem extends SubsystemBase {
-  private final Spark feederRoller;
-  private final Spark intakeLauncherRoller;
-  private final Spark groundFeeder;
+  private final Spark hopper;
+  private final Spark launcher;
+  private final Spark intake;
 
   public FuelSubsystem() {
-    intakeLauncherRoller = new Spark(INTAKE_LAUNCHER_MOTOR_ID);
-    feederRoller = new Spark(FEEDER_MOTOR_ID);
-    groundFeeder = new Spark(FEEDER_GROUND_MOTOR_ID);
+    launcher = new Spark(LAUNCHER_MOTOR_ID);
+    hopper = new Spark(HOPPER_MOTOR_ID);
+    intake = new Spark(INTAKE_MOTOR_ID);
 
 
-    intakeLauncherRoller.setInverted(false);
-    groundFeeder.setInverted(GROUND_FEEDER_INVERTED);
-    SmartDashboard.putNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE);
-    SmartDashboard.putNumber("Intaking intake roller value", INTAKING_INTAKE_VOLTAGE);
-    SmartDashboard.putNumber("Launching feeder roller value", LAUNCHING_FEEDER_VOLTAGE);
-    SmartDashboard.putNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE);
-    SmartDashboard.putNumber("Spin-up feeder roller value", SPIN_UP_FEEDER_VOLTAGE);
+    launcher.setInverted(false);
+    intake.setInverted(INTAKE_INVERTED);
+    SmartDashboard.putNumber("Intaking feeder roller value", HOPPER_INTAKING_VOLTAGE);
+    SmartDashboard.putNumber("Intaking intake roller value", INTAKE_INTAKING_VOLTAGE);
+    SmartDashboard.putNumber("Launching feeder roller value", HOPPER_LAUNCH_VOLTAGE);
+    SmartDashboard.putNumber("Launching launcher roller value", LAUNCHER_LAUNCH_VOLTAGE);
   }
 
   // A method to set the voltage of the intake roller
-  public void setIntakeLauncherRoller(double voltage) {
-    intakeLauncherRoller.setVoltage(voltage);
+  public void setLauncherVoltage(double voltage) {
+    launcher.setVoltage(voltage);
   }
 
   // A method to set the voltage of the intake roller
-  public void setFeederRoller(double voltage) {
-    feederRoller.setVoltage(voltage);
+  public void setHopperVoltage(double voltage) {
+    hopper.setVoltage(voltage);
   }
   
-  public void setGroundFeeder(double voltage) {
-    groundFeeder.setVoltage(voltage);
+  public void setIntakeVoltage(double voltage) {
+    intake.setVoltage(voltage);
   }
   // A method to stop the rollers
   public void stop() {
-    feederRoller.set(0);
-    intakeLauncherRoller.set(0);
-    groundFeeder.set(0);
+    hopper.set(0);
+    launcher.set(0);
+    intake.set(0);
   }
 
   @Override

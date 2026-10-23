@@ -15,8 +15,8 @@ public class Intake extends Command {
   /** Creates a new Intake. */
 
   FuelSubsystem fuelSubsystem;
-  private final Timer groundFeederDelay = new Timer();
-  private boolean groundFeederStarted;
+  private final Timer intakeFeederDelay = new Timer();
+  private boolean intakeFeederStarted;
 
   public Intake(FuelSubsystem fuelSystem) {
     addRequirements(fuelSystem);
@@ -28,24 +28,24 @@ public class Intake extends Command {
   @Override
   public void initialize() {
     fuelSubsystem.stop();
-    groundFeederStarted = false;
-    groundFeederDelay.restart();
-    fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE));
+    intakeFeederStarted = false;
+    intakeFeederDelay.restart();
+    fuelSubsystem.setHopperVoltage(SmartDashboard.getNumber("Intaking feeder roller value", HOPPER_INTAKING_VOLTAGE));
   }
 
   // Start the ground feeder after the intake feeder is running.
   @Override
   public void execute() {
-    if (!groundFeederStarted && groundFeederDelay.hasElapsed(GROUND_FEEDER_DELAY_SECONDS)) {
-      fuelSubsystem.setGroundFeeder(GROUND_FEEDER_VOLTAGE);
-      groundFeederStarted = true;
+    if (!intakeFeederStarted && intakeFeederDelay.hasElapsed(INTAKE_DELAY_SECONDS)) {
+      fuelSubsystem.setIntakeVoltage(INTAKE_INTAKING_VOLTAGE);
+      intakeFeederStarted = true;
     }
   }
 
   // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
-    groundFeederDelay.stop();
+    intakeFeederDelay.stop();
     fuelSubsystem.stop();
   }
 
