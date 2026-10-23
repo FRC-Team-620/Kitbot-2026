@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Constants.OperatorConstants.*;
 import frc.robot.commands.Drive;
+import frc.robot.commands.Eject;
 import frc.robot.commands.ExampleAuto;
 import frc.robot.commands.Intake;
 import frc.robot.commands.Launch;
@@ -64,10 +65,12 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // While Y on the operator controller is held, intake fuel.
-    operatorController.y().whileTrue(new Intake(fuelSubsystem));
-    // While X on the operator controller is held, launch fuel.
-    operatorController.x().whileTrue(new Launch(fuelSubsystem));
+    // While left bumper on the operator controller is held, intake fuel.
+    operatorController.leftBumper().whileTrue(new Intake(fuelSubsystem));
+    // While right bumper on the operator controller is held, launch fuel.
+    operatorController.rightBumper().whileTrue(new Launch(fuelSubsystem));
+    // While X on the operator controller is held, eject fuel
+    operatorController.x().whileTrue(new Eject(fuelSubsystem));
     // Set the default command for the drive subsystem to the command provided by
     // factory with the values provided by the joystick axes on the driver
     // controller. The Y axis of the controller is inverted so that pushing the
