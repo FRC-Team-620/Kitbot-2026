@@ -29,13 +29,12 @@ public final class Constants {
 
   public static final class FuelConstants {
     // Motor controller IDs for Fuel Mechanism motors
-    public static final int FEEDER_MOTOR_ID = 5;
-    public static final int FEEDER_GROUND_MOTOR_ID = 6;
-    public static final int INTAKE_LAUNCHER_MOTOR_ID = 4;
-    public static final double GROUND_FEEDER_DELAY_SECONDS = 0.25;
-    public static final double SHOOTER_FEEDER_DELAY_SECONDS = 0.25;
-    public static final boolean GROUND_FEEDER_INVERTED = false;
-    public static final double GROUND_FEEDER_VOLTAGE = 12;
+    public static final int HOPPER_MOTOR_ID = 5;
+    public static final int INTAKE_MOTOR_ID = 6;
+    public static final int LAUNCHER_MOTOR_ID = 4;
+    public static final double INTAKE_DELAY_SECONDS = 0.25;
+    public static final boolean INTAKE_INVERTED = false;
+    public static final double INTAKE_INTAKING_VOLTAGE = 12;
 
 
     // Current limit and nominal voltage for fuel mechanism motors.
@@ -45,12 +44,10 @@ public final class Constants {
     // Voltage values for various fuel operations. These values may need to be tuned
     // based on exact robot construction.
     // See the Software Guide for tuning information
-    public static final double INTAKING_FEEDER_VOLTAGE = 12;
-    public static final double INTAKING_INTAKE_VOLTAGE = 10;
-    public static final double LAUNCHING_FEEDER_VOLTAGE = -5;
-    public static final double LAUNCHING_LAUNCHER_VOLTAGE = 9;
-    public static final double SPIN_UP_FEEDER_VOLTAGE = -6;
-    public static final double SPIN_UP_SECONDS = 1;
+    public static final double HOPPER_INTAKING_VOLTAGE = 12;
+    //public static final double INTAKING_INTAKE_VOLTAGE = 10;
+    public static final double HOPPER_LAUNCH_VOLTAGE = -5;
+    public static final double LAUNCHER_LAUNCH_VOLTAGE = 9;
   }
 
   public static final class OperatorConstants {
