@@ -23,7 +23,7 @@ public class Wiggle extends Command {
 	@Override
 	public void execute() {
 		// Speed of wiggle is UNTESTED and will 100% need tweaking
-		drivetrainSubsystem.driveArcade(0, Math.sin(timer.get()));
+		drivetrainSubsystem.driveArcade(Math.sin(timer.get()), 0);
 	}
 
 	@Override
