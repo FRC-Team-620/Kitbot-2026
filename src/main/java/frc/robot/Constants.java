@@ -48,6 +48,7 @@ public final class Constants {
     //public static final double INTAKING_INTAKE_VOLTAGE = 10;
     public static final double HOPPER_LAUNCH_VOLTAGE = -5;
     public static final double LAUNCHER_LAUNCH_VOLTAGE = 9;
+    public static final double LAUNCHER_REVERSE_VOLTAGE = -3;
   }
 
   public static final class OperatorConstants {
