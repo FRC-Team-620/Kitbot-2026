@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -25,7 +26,9 @@ public class Wiggle extends Command {
 	@Override
 	public void execute() {
 		// Speed of wiggle is UNTESTED and will 100% need tweaking
-		drivetrainSubsystem.driveArcade(Math.sin(timer.get() * 2 * Math.PI * 5) * .4, 0);
+		double output = Math.sin(timer.get() * 2 * Math.PI * 5) * .4;
+		SmartDashboard.putNumber("WiggleOut", output);
+		drivetrainSubsystem.driveArcade(output, 0);
 	}
 
 	@Override
