@@ -14,6 +14,7 @@ import frc.robot.commands.Eject;
 import frc.robot.commands.ExampleAuto;
 import frc.robot.commands.Intake;
 import frc.robot.commands.Launch;
+import frc.robot.commands.ReverseShooter;
 import frc.robot.commands.SpinUp;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.FuelSubsystem;
@@ -74,7 +75,7 @@ public class RobotContainer {
     operatorController.x().whileTrue(new Launch(fuelSubsystem));
     // While on the operator controller is held, eject fuel
     operatorController.b().whileTrue(new Eject(fuelSubsystem));
-
+    operatorController.a().whileTrue(new ReverseShooter(fuelSubsystem));
     //operatorController.y()
     // Set the default command for the drive subsystem to the command provided by
     // factory with the values provided by the joystick axes on the driver

@@ -15,4 +15,15 @@ public class ReverseShooter extends Command {
 	public void execute() {
 		fuelSubsystem.setLauncherVoltage(FuelConstants.LAUNCHER_REVERSE_VOLTAGE);
 	}
+
+	@Override
+  public void end(boolean interrupted) {
+    fuelSubsystem.stop();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
 }
