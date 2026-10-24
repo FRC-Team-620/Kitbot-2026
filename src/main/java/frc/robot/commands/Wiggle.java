@@ -29,6 +29,11 @@ public class Wiggle extends Command {
 	}
 
 	@Override
+  public void end(boolean interrupted) {
+    drivetrainSubsystem.stop();
+  }
+
+	@Override
 	public boolean isFinished() {
 		return false;
 	}
