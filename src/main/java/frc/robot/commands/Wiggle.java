@@ -18,12 +18,14 @@ public class Wiggle extends Command {
 	@Override
 	public void initialize() {
 		timer = new Timer();
+		timer.reset();
+		timer.start();
 	}
 
 	@Override
 	public void execute() {
 		// Speed of wiggle is UNTESTED and will 100% need tweaking
-		drivetrainSubsystem.driveArcade(Math.sin(timer.get()), 0);
+		drivetrainSubsystem.driveArcade(Math.sin(timer.get() * 2 * Math.PI * 5) * .4, 0);
 	}
 
 	@Override
