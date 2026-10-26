@@ -47,7 +47,8 @@ public final class Constants {
     public static final double HOPPER_INTAKING_VOLTAGE = 12;
     //public static final double INTAKING_INTAKE_VOLTAGE = 10;
     public static final double HOPPER_LAUNCH_VOLTAGE = -5;
-    public static final double LAUNCHER_LAUNCH_VOLTAGE = 9;
+    public static final double LAUNCHER_LAUNCH_VOLTAGE = 8;
+    public static final double LAUNCHER_REVERSE_VOLTAGE = -6;
   }
 
   public static final class OperatorConstants {
@@ -58,7 +59,7 @@ public final class Constants {
 
     // This value is multiplied by the joystick value when rotating the robot to
     // help avoid turning too fast and beign difficult to control
-    public static final double DRIVE_SCALING = .7;
+    public static final double DRIVE_SCALING = 1.0;
     public static final double ROTATION_SCALING = .8;
   }
 }
