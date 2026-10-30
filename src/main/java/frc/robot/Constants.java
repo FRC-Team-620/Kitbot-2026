@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants. This class should not be used for any other
@@ -15,39 +17,18 @@ package frc.robot;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final class DriveConstants {
-    // Motor controller IDs for drivetrain motors
-    public static final int LEFT_LEADER_ID = 1;
-    public static final int LEFT_FOLLOWER_ID = 2;
-    public static final int RIGHT_LEADER_ID = 3;
-    public static final int RIGHT_FOLLOWER_ID = 4;
+  public static final Mode simMode = Mode.SIM;
+  public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : simMode;
 
-    // Current limit for drivetrain motors. 60A is a reasonable maximum to reduce
-    // likelihood of tripping breakers or damaging CIM motors
-    public static final int DRIVE_MOTOR_CURRENT_LIMIT = 60;
-  }
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
 
-  public static final class FuelConstants {
-    // Motor controller IDs for Fuel Mechanism motors
-    public static final int HOPPER_MOTOR_ID = 5;
-    public static final int INTAKE_MOTOR_ID = 6;
-    public static final int LAUNCHER_MOTOR_ID = 4;
-    public static final double INTAKE_DELAY_SECONDS = 0.25;
-    public static final boolean INTAKE_INVERTED = false;
-    public static final double INTAKE_INTAKING_VOLTAGE = 12;
+    /** Running a physics simulator. */
+    SIM,
 
-
-    // Current limit and nominal voltage for fuel mechanism motors.
-    public static final int FEEDER_MOTOR_CURRENT_LIMIT = 60;
-    public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 60;
-
-    // Voltage values for various fuel operations. These values may need to be tuned
-    // based on exact robot construction.
-    // See the Software Guide for tuning information
-    public static final double HOPPER_INTAKING_VOLTAGE = 12;
-    //public static final double INTAKING_INTAKE_VOLTAGE = 10;
-    public static final double HOPPER_LAUNCH_VOLTAGE = -5;
-    public static final double LAUNCHER_LAUNCH_VOLTAGE = 9;
+    /** Replaying from a log file. */
+    REPLAY
   }
 
   public static final class OperatorConstants {

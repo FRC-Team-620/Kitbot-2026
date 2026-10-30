@@ -4,19 +4,32 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import static frc.robot.Constants.OperatorConstants.*;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import static frc.robot.Constants.OperatorConstants.*;
-import frc.robot.commands.Drive;
-import frc.robot.commands.Eject;
-import frc.robot.commands.ExampleAuto;
-import frc.robot.commands.Intake;
-import frc.robot.commands.Launch;
-import frc.robot.commands.SpinUp;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.FuelSubsystem;
+import frc.robot.commands.DriveCommands;
+import frc.robot.commands.EjectCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.LauncherRoutines;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveIO;
+import frc.robot.subsystems.drive.DriveIOReal;
+import frc.robot.subsystems.drive.DriveIOSim;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperIO;
+import frc.robot.subsystems.hopper.HopperIOReal;
+import frc.robot.subsystems.hopper.HopperIOSim;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.launcher.Launcher;
+import frc.robot.subsystems.launcher.LauncherIO;
+import frc.robot.subsystems.launcher.LauncherIOReal;
+import frc.robot.subsystems.launcher.LauncherIOSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -27,9 +40,12 @@ import frc.robot.subsystems.FuelSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DrivetrainSubsystem driveSubsystem = new DrivetrainSubsystem();
-  private final FuelSubsystem fuelSubsystem = new FuelSubsystem();
+  private final Drive drive;
 
+  private final Intake intake;
+  private final Hopper hopper;
+  private final Launcher launcher;
+  
   // The driver's controller
   private final CommandXboxController driverController = new CommandXboxController(
       DRIVER_CONTROLLER_PORT);
@@ -37,20 +53,38 @@ public class RobotContainer {
   // The operator's controller
   private final CommandXboxController operatorController = new CommandXboxController(
       OPERATOR_CONTROLLER_PORT);
-
-  // The autonomous chooser
-  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-
+  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    configureBindings();
+    switch (Constants.CURRENT_MODE) {
+      case REAL:
+        //Real robot
+        drive = new Drive(new DriveIOReal());
+        intake = new Intake(new IntakeIOReal());
+        hopper = new Hopper(new HopperIOReal());
+        launcher = new Launcher(new LauncherIOReal());
+        break;
+      
+      case SIM:
+        //Sim mode
+        drive = new Drive(new DriveIOSim());
+        intake = new Intake(new IntakeIOSim());
+        hopper = new Hopper(new HopperIOSim());
+        launcher = new Launcher(new LauncherIOSim());
+        break;
+      
+      default:
+        //Replay
+        drive = new Drive(new DriveIO() {});
+        intake = new Intake(new IntakeIO() {});
+        hopper = new Hopper(new HopperIO() {});
+        launcher = new Launcher(new LauncherIO() {});
+        break;
+    }
 
-    // Set the options to show up in the Dashboard for selecting auto modes. If you
-    // add additional auto modes you can add additional lines here with
-    // autoChooser.addOption
-    autoChooser.setDefaultOption("Autonomous", new ExampleAuto(driveSubsystem, fuelSubsystem));
+    configureBindings();
   }
 
   /**
@@ -65,23 +99,20 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
     // While left bumper on the operator controller is held, intake fuel.
-    operatorController.leftBumper().whileTrue(new Intake(fuelSubsystem));
+    operatorController.leftBumper().whileTrue(IntakeCommand.intake(intake, hopper));
     // While right bumper on the operator controller is held, spin up launcher.
-    operatorController.rightBumper().whileTrue(new SpinUp(fuelSubsystem));
+    operatorController.rightBumper().whileTrue(LauncherRoutines.spinUp(intake, launcher));
     // While X on the operator controller is pressed, shoot fuel
-    operatorController.x().whileTrue(new Launch(fuelSubsystem));
+    operatorController.x().whileTrue(LauncherRoutines.launch(intake, hopper, launcher));
     // While on the operator controller is held, eject fuel
-    operatorController.b().whileTrue(new Eject(fuelSubsystem));
-    // Set the default command for the drive subsystem to the command provided by
-    // factory with the values provided by the joystick axes on the driver
-    // controller. The Y axis of the controller is inverted so that pushing the
-    // stick away from you (a negative value) drives the robot forwards (a positive
-    // value)
-    driveSubsystem.setDefaultCommand(new Drive(driveSubsystem, driverController));
-    fuelSubsystem.setDefaultCommand(fuelSubsystem.run(() -> fuelSubsystem.stop()));
-  }
+    operatorController.b().whileTrue(EjectCommand.eject(hopper, launcher));
+
+    drive.setDefaultCommand(DriveCommands.driveArcade(drive, driverController));
+    intake.setDefaultCommand(Commands.runOnce(() -> intake.stop(), intake));
+    hopper.setDefaultCommand(Commands.runOnce(() -> hopper.stop(), hopper));
+    launcher.setDefaultCommand(Commands.runOnce(() -> launcher.stop(), launcher));
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -89,7 +120,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return new ExampleAuto(driveSubsystem, fuelSubsystem);
+    return null;
   }
 }
